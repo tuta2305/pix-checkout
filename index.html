@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout Pix - RaspaBet</title>
+</head>
+<body>
+  <h1>Pagar com Pix</h1>
+
+  <input type="text" id="nome" placeholder="Seu nome">
+  <input type="text" id="cpf" placeholder="CPF (somente números)">
+  <input type="number" id="valor" placeholder="Valor (ex: 59.90)">
+  <button onclick="gerarPix()">Gerar Pix</button>
+
+  <div id="qrcode" style="margin-top: 20px;"></div>
+
+  <script>
+    async function gerarPix() {
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+      const valor = document.getElementById('valor').value;
+
+      const resposta = await fetch('http://localhost:3000/gerar-pix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, cpf, valor })
+      });
+
+      const data = await resposta.json();
+
+      if (data.qrCodeImage) {
+        document.getElementById('qrcode').innerHTML = `
+          <h3>Escaneie o QR Code abaixo:</h3>
+          <img src="${data.qrCodeImage}" alt="QR Pix" width="300">
+        `;
+      } else {
+        alert('Erro ao gerar Pix');
+      }
+    }
+  </script>
+</body>
+</html>
